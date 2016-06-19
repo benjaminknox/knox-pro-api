@@ -8,7 +8,7 @@ router.get('/bible/daily_verse', function(req, res, next) {
     function (error, response, body) {
       if (!error && response.statusCode == 200) {
         res.send({
-          verseHtml: body
+          html: body
         });
       } else {
         res.send(error);

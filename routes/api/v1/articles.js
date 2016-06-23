@@ -30,12 +30,12 @@ router.get('/articles/last', function() {
 });
 
 router.get('/articles/:id?', function(req, res, next) {
-  var query;
+  var query = Articles.where({'active': 1});
   
   if(req.params.id) {
-    query = Articles.where({'id': req.params.id}).fetch();
+    query = query.where({ 'id': req.params.id }).fetch();
   } else {
-    query = Articles.collection().orderBy('created_date', 'DESC').fetch();
+    query = query.orderBy('created_date', 'DESC').fetchAll();
   }
 
   query

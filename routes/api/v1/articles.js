@@ -11,17 +11,31 @@ var knex = require('knex')({
 });
 var bookshelf = require('bookshelf')(knex);
 var router = express.Router();
+var Articles = bookshelf.Model.extend({
+  tableName: 'articles'
+});
+
+router.get('/articles/last', function() {
+  Articles.fetchOne().orderBy('created_date', 'DESC')
+    .then(function(data){
+      if(data) {
+        res.send(data);
+      } else {
+        res.status(404).send(data);
+      }
+    })
+    .catch(function(error) {
+      res.status(500).send(error);
+    });
+});
 
 router.get('/articles/:id?', function(req, res, next) {
-  var Articles = bookshelf.Model.extend({
-        tableName: 'articles'
-      }),
-      query;
+  var query;
   
   if(req.params.id) {
     query = Articles.where({'id': req.params.id}).fetch();
   } else {
-    query = Articles.collection().fetch();
+    query = Articles.collection().orderBy('created_date', 'DESC').fetch();
   }
 
   query

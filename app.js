@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
+var emails = require('./routes/emails');
 var articles = require('./routes/api/v1/articles');
 var bible = require('./routes/api/v1/bible');
 var instagram = require('./routes/api/v1/instagram');
@@ -32,6 +33,7 @@ app.all('/*', function(req, res, next) {
 });
 
 app.use('/', routes);
+app.use('/emails', emails);
 app.use('/api/v1', [
   articles,
   bible,

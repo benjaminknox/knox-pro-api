@@ -11,9 +11,12 @@ var knex = require('knex')({
 });
 var bookshelf = require('bookshelf')(knex);
 var router = express.Router();
+var pageSize = 10;
 var Articles = bookshelf.Model.extend({
   tableName: 'articles'
 });
+
+bookshelf.plugin('pagination');
 
 router.get('/articles/last', function() {
   Articles.fetchOne().orderBy('created_date', 'DESC')
@@ -34,7 +37,16 @@ router.get('/articles/category/:category', function(req, res, next) {
       'active': 1,
       'category': req.params.category
     }
-  ).orderBy('created_date', 'DESC').fetchAll();
+  ).orderBy('created_date', 'DESC');
+
+  if(req.query.page) {
+    query = query.fetchPage({
+      page: req.query.page,
+      pageSize: req.query.pageSize || pageSize
+    });
+  } else {
+    query = query.fetchAll();
+  }
   
   query
     .then(function(data){
@@ -55,7 +67,16 @@ router.get('/articles/:id?', function(req, res, next) {
   if(req.params.id) {
     query = query.where({ 'id': req.params.id }).fetch();
   } else {
-    query = query.orderBy('created_date', 'DESC').fetchAll();
+    query = query.orderBy('created_date', 'DESC');
+    
+    if(req.query.page) {
+     query = query.fetchPage({
+       page: req.query.page,
+       pageSize: req.query.pageSize || pageSize
+     });
+    } else {
+      query = query.fetchAll();
+    }
   }
 
   query

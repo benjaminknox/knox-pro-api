@@ -43,6 +43,12 @@ router.post('/webhook', function (req, res) {
       depth: 5
     }));
 
+    // var Email = bookshelf.Model.extend({
+    //   tableName: 'emails', debugger: true
+    // });
+    //
+    // var email = new Email(flatten(rawEmail, {delimiter: '_', overwrite: true}));
+
     console.log('Parsed fields: ' + Object.keys(fields));
 
     /* Write down the payload for ulterior inspection. */

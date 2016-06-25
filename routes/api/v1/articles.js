@@ -18,6 +18,23 @@ var Articles = bookshelf.Model.extend({
 
 bookshelf.plugin('pagination');
 
+function returnObject(data, type) {
+  var records = {
+    type: type,
+    records: data
+  };
+  
+  if(data.pagination) {
+    records.count = data.pagination.rowCount;
+    records.pageCount = data.pagination.pageCount;
+  } else {
+    records.count = data.length;
+    records.pageCount = 1;
+  }
+  
+  return records;
+}
+
 router.get('/articles/last', function() {
   Articles.fetchOne().orderBy('created_date', 'DESC')
     .then(function(data){
@@ -51,7 +68,7 @@ router.get('/articles/category/:category', function(req, res, next) {
   query
     .then(function(data){
       if(data) {
-        res.send(data);
+        res.send(returnObject(data, 'article'));
       } else {
         res.status(404).send(data);
       }
@@ -82,7 +99,7 @@ router.get('/articles/:id?', function(req, res, next) {
   query
     .then(function(data){
       if(data) {
-        res.send(data);
+        res.send(returnObject(data, 'article'));
       } else {
         res.status(404).send(data);
       }

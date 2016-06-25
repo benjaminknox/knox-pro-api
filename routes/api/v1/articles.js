@@ -29,6 +29,26 @@ router.get('/articles/last', function() {
     });
 });
 
+router.get('/articles/category/:category', function(req, res, next) {
+  var query = Articles.where({
+      'active': 1,
+      'category': req.params.category
+    }
+  ).orderBy('created_date', 'DESC').fetchAll();
+  
+  query
+    .then(function(data){
+      if(data) {
+        res.send(data);
+      } else {
+        res.status(404).send(data);
+      }
+    })
+    .catch(function(error) {
+      res.status(500).send(error);
+    });
+});
+
 router.get('/articles/:id?', function(req, res, next) {
   var query = Articles.where({'active': 1});
   

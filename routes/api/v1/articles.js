@@ -49,6 +49,21 @@ router.get('/articles/last', function() {
     });
 });
 
+router.get('/articles/categories', function(req, res, next) {
+  Articles
+    .collection().fetch()
+    .then(function(articles){
+      if(articles) {
+        res.send(Object.keys(articles.groupBy('category')));
+      } else {
+        res.status(404).send(data);
+      }
+    })
+    .catch(function(error) {
+      res.status(500).send(error);
+    });
+});
+
 router.get('/articles/category/:category', function(req, res, next) {
   var query = Articles.where({
       'active': 1,

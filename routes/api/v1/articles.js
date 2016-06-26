@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var express = require('express');
 var knex = require('knex')({
   client: 'mysql',
@@ -20,16 +21,21 @@ bookshelf.plugin('pagination');
 
 function returnObject(data, type) {
   var records = {
-    type: type,
-    records: data
+    type: type
   };
   
   if(data.pagination) {
     records.count = data.pagination.rowCount;
     records.pageCount = data.pagination.pageCount;
   } else {
-    records.count = data.length;
+    records.count = data.length || 1;
     records.pageCount = 1;
+  }
+  
+  if(records.count > 1) {
+    records.records = data;
+  } else { 
+    records.record = data;
   }
   
   return records;
@@ -53,8 +59,10 @@ router.get('/articles/categories', function(req, res, next) {
   Articles
     .collection().fetch()
     .then(function(articles){
+      var keys;
       if(articles) {
-        res.send(Object.keys(articles.groupBy('category')));
+        keys = Object.keys(articles.groupBy('category')); 
+        res.send(returnObject(keys, 'categories'));
       } else {
         res.status(404).send(data);
       }

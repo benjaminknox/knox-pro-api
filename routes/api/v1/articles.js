@@ -19,7 +19,7 @@ var Articles = bookshelf.Model.extend({
 
 bookshelf.plugin('pagination');
 
-function returnObject(data, type) {
+function returnObject(data, type, forceArray) {
   var records = {
     type: type
   };
@@ -32,7 +32,7 @@ function returnObject(data, type) {
     records.pageCount = 1;
   }
   
-  if(records.count > 1) {
+  if(records.count > 1 || forceArray) {
     records.records = data;
   } else { 
     records.record = data;
@@ -91,7 +91,7 @@ router.get('/articles/category/:category', function(req, res, next) {
   query
     .then(function(data){
       if(data) {
-        res.send(returnObject(data, 'article'));
+        res.send(returnObject(data, 'article', true));
       } else {
         res.status(404).send(data);
       }
@@ -102,11 +102,13 @@ router.get('/articles/category/:category', function(req, res, next) {
 });
 
 router.get('/articles/:id?', function(req, res, next) {
-  var query = Articles.where({'active': 1});
+  var forceArray = false,
+      query = Articles.where({'active': 1});
   
   if(req.params.id) {
     query = query.where({ 'id': req.params.id }).fetch();
   } else {
+    forceArray = true;
     query = query.orderBy('created_date', 'DESC');
     
     if(req.query.page) {
@@ -122,7 +124,7 @@ router.get('/articles/:id?', function(req, res, next) {
   query
     .then(function(data){
       if(data) {
-        res.send(returnObject(data, 'article'));
+        res.send(returnObject(data, 'article', forceArray));
       } else {
         res.status(404).send(data);
       }

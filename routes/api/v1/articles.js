@@ -56,12 +56,12 @@ router.get('/articles/last', function() {
 });
 
 router.get('/articles/categories', function(req, res, next) {
-  Articles
-    .collection().fetch()
+  Articles.where({'active': 1})
+    .fetchAll()
     .then(function(articles){
       var keys;
       if(articles) {
-        keys = Object.keys(articles.groupBy('category')); 
+        keys = Object.keys(articles.groupBy('category'));
         res.send(returnObject(keys, 'categories'));
       } else {
         res.status(404).send(data);

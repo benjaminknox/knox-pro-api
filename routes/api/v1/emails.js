@@ -78,9 +78,8 @@ router.post('/emails/webhook', function (req, res) {
     MongoClient.connect(url + '/articles', function(err, db) {
       assert.equal(null, err);
       if(_.find(email.envelopeTo, {address: 'dan@knox.pro'})) {
-        var article = cheerio.load(email.html)('body').text().trim().split('\r\n');
-        var title = article.shift().trim(); 
-        var message = article.join('\r\n');
+        var title = email.subject;
+        var message = email.text;
         
         db.collection('dans')
           .insertOne({
